@@ -1,20 +1,56 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Pomodoro Timer</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <!-- Real-time Clock -->
+  <div class="clock-section">
+    <h2>Current Time</h2>
+    <h1>{{ currentTime }}</h1>
+  </div>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <!-- Pomodoro Timer (Shows when active) -->
+  <div *ngIf="endTime" class="timer-section">
+    <ion-chip [color]="isWorkTime ? 'primary' : 'success'">
+      <ion-icon [name]="isWorkTime ? 'time' : 'cafe'"></ion-icon>
+      <ion-label>{{ isWorkTime ? 'Work Time' : 'Break Time' }}</ion-label>
+    </ion-chip>
+
+    <div class="time-display">
+      <h1>{{ timeLeft }}</h1>
+      <p>Ends at {{ endTime }}</p>
+    </div>
+
+    <div class="controls">
+      <ion-button 
+        expand="block" 
+        [color]="isWorkTime ? 'primary' : 'success'"
+        (click)="isRunning ? pauseTimer() : startPomodoro()">
+        <ion-icon [name]="isRunning ? 'pause' : 'play'"></ion-icon>
+        {{ isRunning ? 'Pause' : 'Resume' }}
+      </ion-button>
+
+      <ion-button 
+        expand="block" 
+        fill="outline" 
+        color="medium"
+        (click)="resetTimer()">
+        <ion-icon name="refresh"></ion-icon>
+        Reset
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Start Button (Shows when no active timer) -->
+  <div *ngIf="!endTime" class="start-button">
+    <ion-button 
+      expand="block" 
+      color="primary"
+      (click)="startPomodoro()">
+      <ion-icon name="play" slot="start"></ion-icon>
+      Start 25-Minute Pomodoro
+    </ion-button>
   </div>
 </ion-content>
