@@ -5,12 +5,9 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class PomodoroService {
-
-  constructor() { }
-
-  // Timer settings
-  private workDuration = 25 * 60;
-  private breakDuration = 5 * 60; 
+  // Timer settings (2 min work, 1 min break for testing)
+  private workDuration = 25 * 60; // 2 minutes in seconds
+  private breakDuration = 5 * 60; // 1 minute in seconds
 
   // Timer state
   private timer: any;
@@ -21,11 +18,13 @@ export class PomodoroService {
 
   startTimer() {
     if (this.timer) clearInterval(this.timer);
-
-     // Calculate end time (25 mins from now)
-     const now = new Date();
-     now.setMinutes(now.getMinutes() + 25);
-     this.endTime$.next(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    
+    // Consistent calculation using milliseconds
+    const duration = this.isWorkTime$.value ? this.workDuration : this.breakDuration;
+    const endTime = new Date(Date.now() + duration * 1000);
+    this.endTime$.next(
+      endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    );
     
     this.isRunning$.next(true);
     this.timer = setInterval(() => this.tick(), 1000);
@@ -47,10 +46,11 @@ export class PomodoroService {
     const newDuration = isWorkTime ? this.workDuration : this.breakDuration;
     this.timeLeft$.next(newDuration);
 
-    // Update end time for new session
-    const now = new Date();
-    now.setMinutes(now.getMinutes() + (isWorkTime ? 25 : 5));
-    this.endTime$.next(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    // Same calculation method as startTimer()
+    const endTime = new Date(Date.now() + newDuration * 1000);
+    this.endTime$.next(
+      endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    );
 
     this.startTimer();
   }
@@ -64,6 +64,7 @@ export class PomodoroService {
     this.pauseTimer();
     const duration = this.isWorkTime$.value ? this.workDuration : this.breakDuration;
     this.timeLeft$.next(duration);
+    this.endTime$.next(''); // Clear end time display
   }
 
   formatTime(seconds: number): string {
