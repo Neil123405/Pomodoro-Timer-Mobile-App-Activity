@@ -16,7 +16,7 @@ export class HomePage implements OnInit, OnDestroy {
   isRunning = false;
   isWorkTime = true;
   private subs: Subscription[] = [];
-  private clockInterval: any;
+  showSettings = false;
 
   constructor(
     private timerService: PomodoroService,
@@ -26,6 +26,12 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnInit() {
     this.notificationService.initialize();
     this.startClock();
+
+    this.timeLeft = this.timerService.formatTime(
+      this.timerService.isWorkTime$.value 
+        ? this.timerService.workDurationSeconds 
+        : this.timerService.breakDurationSeconds
+    );
     
     // Subscribe to timer changes
     this.subs.push(
@@ -56,9 +62,18 @@ export class HomePage implements OnInit, OnDestroy {
     );
   }
 
+  openSettings() {
+    this.showSettings = true;
+  }
+
+  // Add this method
+  onSettingsClosed() {
+    this.showSettings = false;
+  }
+
+
   startClock() {
     this.updateTime();
-    this.clockInterval = setInterval(() => this.updateTime(), 1000);
   }
 
   updateTime() {

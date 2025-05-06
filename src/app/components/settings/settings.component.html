@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Timer Settings</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal.emit()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="settings-container">
+    <ion-list lines="none" class="settings-list">
+      <ion-item>
+        <ion-icon slot="start" name="time-outline" color="primary"></ion-icon>
+        <ion-label position="stacked">Work Duration (minutes)</ion-label>
+        <ion-input 
+          type="number" 
+          [(ngModel)]="workSeconds" 
+          min="1"
+          class="duration-input"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-icon slot="start" name="cafe-outline" color="primary"></ion-icon>
+        <ion-label position="stacked">Break Duration (minutes)</ion-label>
+        <ion-input 
+          type="number" 
+          [(ngModel)]="breakSeconds" 
+          min="1"
+          class="duration-input"
+        ></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <ion-button 
+      expand="block" 
+      color="primary"
+      (click)="saveSettings()"
+      [disabled]="workSeconds <= 0 || breakSeconds <= 0"
+      class="save-button"
+    >
+      Save Settings
+    </ion-button>
+  </div>
+</ion-content>

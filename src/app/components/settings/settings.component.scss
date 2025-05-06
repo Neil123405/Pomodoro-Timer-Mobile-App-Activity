@@ -1,0 +1,52 @@
+/* settings.component.scss */
+ion-content {
+  --ion-background-color: #fff;
+  --ion-text-color: #000; /* Force black text */
+  height: 100%;
+}
+
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px;
+}
+
+.settings-list {
+  background: transparent;
+  flex-grow: 1;
+}
+
+ion-item {
+  --background: transparent;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --color: #000; /* Item text color */
+  margin-bottom: 24px;
+  
+  ion-icon {
+    font-size: 24px;
+    margin-right: 16px;
+    color: var(--ion-color-primary); /* Ensures icon color */
+  }
+}
+
+.duration-input {
+  border: 1px solid var(--ion-color-medium-shade);
+  border-radius: 8px;
+  padding: 12px 16px;
+  width: 100%;
+  margin-top: 8px;
+  color: #000; /* Explicit text color */
+  background: #fff;
+  
+  /* For placeholder text */
+  &::placeholder {
+    color: #666;
+  }
+}
+
+.save-button {
+  margin-top: auto;
+  margin-bottom: 16px;
+}

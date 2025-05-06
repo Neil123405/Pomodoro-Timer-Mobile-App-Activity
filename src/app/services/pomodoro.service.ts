@@ -5,27 +5,47 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class PomodoroService {
-  // Timer settings (2 min work, 1 min break for testing)
-  private workDuration = 25 * 60; // 2 minutes in seconds
-  private breakDuration = 5 * 60; // 1 minute in seconds
+ private _workDuration = 25 * 60; // Default 25 minutes
+ private _breakDuration = 5 * 60;  // Default 5 minutes
 
   // Timer state
   private timer: any;
-  timeLeft$ = new BehaviorSubject<number>(this.workDuration);
+  timeLeft$ = new BehaviorSubject<number>(this._workDuration);
   isRunning$ = new BehaviorSubject<boolean>(false);
   isWorkTime$ = new BehaviorSubject<boolean>(true);
   endTime$ = new BehaviorSubject<string>('');
+  settingsChanged$ = new BehaviorSubject<boolean>(false);
+
+  // Public getters for current settings
+  get workDurationSeconds() {
+    return this._workDuration;
+  }
+
+  get breakDurationSeconds() {
+    return this._breakDuration;
+  }
+
+  updateSettings(workSeconds: number, breakSeconds: number) {
+    this._workDuration = workSeconds;
+    this._breakDuration = breakSeconds;
+    
+    if (this.isRunning$.value) {
+      this.resetTimer();
+    }
+    
+    this.settingsChanged$.next(true);
+  }
 
   startTimer() {
     if (this.timer) clearInterval(this.timer);
     
-    // Consistent calculation using milliseconds
-    const duration = this.isWorkTime$.value ? this.workDuration : this.breakDuration;
+    const duration = this.isWorkTime$.value ? this._workDuration : this._breakDuration;
     const endTime = new Date(Date.now() + duration * 1000);
     this.endTime$.next(
-      endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
     );
     
+    this.timeLeft$.next(duration);
     this.isRunning$.next(true);
     this.timer = setInterval(() => this.tick(), 1000);
   }
@@ -43,13 +63,13 @@ export class PomodoroService {
     const isWorkTime = !this.isWorkTime$.value;
     this.isWorkTime$.next(isWorkTime);
     
-    const newDuration = isWorkTime ? this.workDuration : this.breakDuration;
+    const newDuration = isWorkTime ? this._workDuration : this._breakDuration;
     this.timeLeft$.next(newDuration);
 
     // Same calculation method as startTimer()
     const endTime = new Date(Date.now() + newDuration * 1000);
     this.endTime$.next(
-      endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
     );
 
     this.startTimer();
@@ -62,9 +82,9 @@ export class PomodoroService {
 
   resetTimer() {
     this.pauseTimer();
-    const duration = this.isWorkTime$.value ? this.workDuration : this.breakDuration;
+    const duration = this.isWorkTime$.value ? this._workDuration : this._breakDuration;
     this.timeLeft$.next(duration);
-    this.endTime$.next(''); // Clear end time display
+    this.endTime$.next(''); 
   }
 
   formatTime(seconds: number): string {
