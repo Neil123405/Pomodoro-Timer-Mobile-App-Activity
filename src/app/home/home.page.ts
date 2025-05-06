@@ -17,6 +17,7 @@ export class HomePage implements OnInit, OnDestroy {
   isWorkTime = true;
   private subs: Subscription[] = [];
   showSettings = false;
+  clockInterval: any;
 
   constructor(
     private timerService: PomodoroService,
@@ -74,6 +75,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   startClock() {
     this.updateTime();
+    this.clockInterval = setInterval(() => this.updateTime(), 1000);
   }
 
   updateTime() {
